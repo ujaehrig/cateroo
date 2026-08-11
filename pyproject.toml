@@ -1,0 +1,53 @@
+[project]
+name = "cateroo"
+version = "0.1.0"
+description = "Fetch Cateroo order emails via IMAP, parse meals, push to CalDAV"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "lxml>=5.3.0",
+    "icalendar>=6.1.0",
+    "python-dotenv>=1.0.1",
+    "requests>=2.34.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"
+
+[project.scripts]
+cateroo = "cateroo.main:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.8.0",
+    "pyright>=1.1.390",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "SIM"]
+
+[tool.pyright]
+pythonVersion = "3.13"
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+reportUnnecessaryIsInstance = false
+reportCallIssue = "warning"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=cateroo --cov-report=term-missing --cov-fail-under=100"
+
+[tool.coverage.run]
+source = ["src/cateroo"]

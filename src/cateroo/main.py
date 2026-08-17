@@ -10,6 +10,7 @@ from cateroo.config import load_config
 from cateroo.db import Database
 from cateroo.ics import generate_ics
 from cateroo.parser import Meal, parse_gastro_text
+from cateroo.r2_upload import upload_to_r2
 
 logger = logging.getLogger(__name__)
 
@@ -80,5 +81,8 @@ def main() -> None:
     output_path = Path(config.ics_output_path)
     output_path.write_bytes(ics_data)
     logger.info("Wrote %d meal(s) to %s", len(all_meals), output_path)
+
+    # Upload to Cloudflare R2
+    upload_to_r2(config, ics_data)
 
     logger.info("Done")

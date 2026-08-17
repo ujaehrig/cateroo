@@ -16,6 +16,11 @@ def _config() -> Config:
         cateroo_password="pass123",
         ics_output_path="./test.ics",
         db_path=":memory:",
+        r2_bucket="my-bucket",
+        r2_endpoint_url="https://abc.r2.cloudflarestorage.com",
+        r2_access_key_id="fake-access-key",
+        r2_secret_access_key="fake-secret-key",
+        r2_object_key="cateroo.ics",
     )
 
 

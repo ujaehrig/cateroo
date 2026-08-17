@@ -19,18 +19,25 @@ def _config(ics_path: str = "/tmp/test_cateroo.ics") -> Config:
         cateroo_password="pass123",
         ics_output_path=ics_path,
         db_path=":memory:",
+        r2_bucket="my-bucket",
+        r2_endpoint_url="https://abc.r2.cloudflarestorage.com",
+        r2_access_key_id="fake-access-key",
+        r2_secret_access_key="fake-secret-key",
+        r2_object_key="cateroo.ics",
     )
 
 
 class TestMain:
     """Tests for main orchestration function."""
 
+    @patch("cateroo.main.upload_to_r2")
     @patch("cateroo.main.CaterooApiClient")
     @patch("cateroo.main.load_config")
     def test_processes_bookings_and_writes_ics(
         self,
         mock_load_config: MagicMock,
         mock_api_cls: MagicMock,
+        mock_upload: MagicMock,
     ) -> None:
         with tempfile.NamedTemporaryFile(suffix=".ics", delete=False) as f:
             ics_path = f.name
@@ -59,14 +66,19 @@ class TestMain:
         assert "Lunch: FALAFEL" in summaries
         assert "Lunch: SALATBOWL" in summaries
 
+        # Verify R2 upload was called with the ICS data
+        mock_upload.assert_called_once_with(mock_load_config.return_value, ics_data)
+
         Path(ics_path).unlink()
 
+    @patch("cateroo.main.upload_to_r2")
     @patch("cateroo.main.CaterooApiClient")
     @patch("cateroo.main.load_config")
     def test_no_bookings_exits_early(
         self,
         mock_load_config: MagicMock,
         mock_api_cls: MagicMock,
+        mock_upload: MagicMock,
     ) -> None:
         mock_load_config.return_value = _config()
 
@@ -77,13 +89,16 @@ class TestMain:
         main()
 
         mock_api.get_menu_offer.assert_not_called()
+        mock_upload.assert_not_called()
 
+    @patch("cateroo.main.upload_to_r2")
     @patch("cateroo.main.CaterooApiClient")
     @patch("cateroo.main.load_config")
     def test_login_failure_exits_nonzero(
         self,
         mock_load_config: MagicMock,
         mock_api_cls: MagicMock,
+        mock_upload: MagicMock,
     ) -> None:
         mock_load_config.return_value = _config()
 
@@ -94,13 +109,16 @@ class TestMain:
         with pytest.raises(SystemExit) as exc_info:
             main()
         assert exc_info.value.code == 1
+        mock_upload.assert_not_called()
 
+    @patch("cateroo.main.upload_to_r2")
     @patch("cateroo.main.CaterooApiClient")
     @patch("cateroo.main.load_config")
     def test_missing_gastro_text_uses_menu_number(
         self,
         mock_load_config: MagicMock,
         mock_api_cls: MagicMock,
+        mock_upload: MagicMock,
     ) -> None:
         with tempfile.NamedTemporaryFile(suffix=".ics", delete=False) as f:
             ics_path = f.name
@@ -121,5 +139,7 @@ class TestMain:
         events = [c for c in cal.walk() if c.name == "VEVENT"]
         assert len(events) == 1
         assert str(events[0].get("SUMMARY")) == "Lunch: cateroo #8"
+
+        mock_upload.assert_called_once()
 
         Path(ics_path).unlink()

@@ -15,6 +15,11 @@ class Config:
     cateroo_password: str
     ics_output_path: str
     db_path: str
+    r2_bucket: str
+    r2_endpoint_url: str
+    r2_access_key_id: str
+    r2_secret_access_key: str
+    r2_object_key: str
 
 
 def _require_env(name: str) -> str:
@@ -40,4 +45,9 @@ def load_config() -> Config:
         cateroo_password=_require_env("CATEROO_PASSWORD"),
         ics_output_path=os.environ.get("ICS_OUTPUT_PATH", "./cateroo.ics"),
         db_path=os.environ.get("DB_PATH", "./cateroo.db"),
+        r2_bucket=_require_env("R2_BUCKET"),
+        r2_endpoint_url=_require_env("R2_ENDPOINT_URL"),
+        r2_access_key_id=_require_env("R2_ACCESS_KEY_ID"),
+        r2_secret_access_key=_require_env("R2_SECRET_ACCESS_KEY"),
+        r2_object_key=os.environ.get("R2_OBJECT_KEY", "cateroo.ics"),
     )

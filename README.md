@@ -76,6 +76,27 @@ Add this URL as a calendar subscription in Outlook, Google Calendar,
 or Apple Calendar. The calendar refreshes automatically based on each
 client's polling interval.
 
+## Deployment
+
+The script can run as a **GitHub Actions scheduled workflow** — no
+dedicated machine needed.
+
+1. Push this repo to GitHub.
+2. Add the following secrets in Settings → Secrets and variables →
+   Actions:
+   - `CATEROO_URL`
+   - `CATEROO_USER`
+   - `CATEROO_PASSWORD`
+   - `R2_BUCKET`
+   - `R2_ENDPOINT_URL`
+   - `R2_ACCESS_KEY_ID`
+   - `R2_SECRET_ACCESS_KEY`
+   - `R2_OBJECT_KEY`
+3. The workflow runs daily at 07:00 UTC. You can also trigger it
+   manually from the Actions tab via "Run workflow".
+
+See `.github/workflows/cateroo.yml` for details.
+
 ## Development
 
 ```bash

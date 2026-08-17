@@ -82,17 +82,20 @@ The script can run as a **GitHub Actions scheduled workflow** — no
 dedicated machine needed.
 
 1. Push this repo to GitHub.
-2. Add the following secrets in Settings → Secrets and variables →
-   Actions:
+2. Create an environment called `cateroo` in Settings → Environments.
+3. Add **variables** (Settings → Environments → cateroo → Environment
+   variables):
    - `CATEROO_URL`
    - `CATEROO_USER`
-   - `CATEROO_PASSWORD`
    - `R2_BUCKET`
    - `R2_ENDPOINT_URL`
+   - `R2_OBJECT_KEY`
+4. Add **secrets** (Settings → Environments → cateroo → Environment
+   secrets):
+   - `CATEROO_PASSWORD`
    - `R2_ACCESS_KEY_ID`
    - `R2_SECRET_ACCESS_KEY`
-   - `R2_OBJECT_KEY`
-3. The workflow runs daily at 07:00 UTC. You can also trigger it
+5. The workflow runs daily at 07:00 UTC. You can also trigger it
    manually from the Actions tab via "Run workflow".
 
 See `.github/workflows/cateroo.yml` for details.

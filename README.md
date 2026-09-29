@@ -100,6 +100,38 @@ dedicated machine needed.
 
 See `.github/workflows/cateroo.yml` for details.
 
+## Triggering via Webhook
+
+Besides the daily schedule and the manual "Run workflow" button, the
+workflow can be triggered externally through GitHub's
+`repository_dispatch` event. This lets any system (for example, an
+inbox automation that fires when a new meal order arrives) start a
+run over HTTP.
+
+Send an authenticated `POST` to the repository's `dispatches`
+endpoint with the event type `run-cateroo`:
+
+```bash
+curl -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer <GITHUB_TOKEN>" \
+  https://api.github.com/repos/<owner>/<repo>/dispatches \
+  -d '{"event_type":"run-cateroo"}'
+```
+
+- `<GITHUB_TOKEN>` is a GitHub token, not an app secret. Use a
+  fine-grained personal access token scoped to this repository with
+  `Contents: read and write`, or a classic token with the `repo`
+  scope.
+- `<owner>/<repo>` is the repository path, e.g. `ulf/cateroo`.
+- Authentication is handled entirely by GitHub; no application-level
+  secret or server is required.
+
+The event type must match the `types` list under
+`repository_dispatch` in `.github/workflows/cateroo.yml`. You may
+optionally include a `client_payload` object for future use; the
+current pipeline ignores it.
+
 ## Development
 
 ```bash
